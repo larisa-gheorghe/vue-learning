@@ -1,5 +1,5 @@
-=========================================================
-================= Introduction ==========================
+---
+# Introduction
 
 Angular - Developed by Google in 2010, got updated to Angular (2) in 2016; Now it's a typescript based JS framework
 React   - Developed at Facebook in 2013
