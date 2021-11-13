@@ -1340,7 +1340,7 @@ module.exports = {
 ```
 - in the console we can see the name of the rule that we break: [ESLint Rules](https://eslint.org/docs/rules/)
 ```json
-        //.eslintrc.json
+        // .eslintrc.json
         {
             "extends": "eslint:recommended",
             "env": {
@@ -2172,5 +2172,288 @@ h2 {
 ```
 - if we use both transitions and animations with different duration, by default vue will use the duration with the longest time 
 - if possible you want the duration to match
-- if you want to tell vue which one has priority, you can use the 'type' option: `<transition name="zoom" type="transition">`
+- if necesarry, vue allows you to decide which one has priority, by using the 'type' option: `<transition name="zoom" type="transition">`
+- if we want an animation to play when the browser is refreshed, we need to add the `appear` property to the `transition` element: 
+    `<transition name="zoom" type="transition" appear>`
 
+
+# Animating with JavaScript
+
+- Vue provides 3 hooks to use for both entering and leaving animation: `before-enter`, `enter`, `after-enter`, `before-leave`, `leave`, `after-leave`
+- the entering animations are used for when the element is being inserted into the DOM
+  - `before-enter`: is triggered before the animation starts; it allows you to prepare for anything you might need
+  - `enter`: where you perform the animation itself; is where most of your code will be written
+  - `after-enter`: called when the animation is finished; it allows you to do cleanup if necessary
+- the leaving animation are used for when an element is being removed from the DOM
+  - `before-leave`: triggered before the animation starts
+  - `leave`: where you would perform the animation
+  - `after-leave`: used after the animation is complete
+- there are two additional events, called the cancelled events (it is possible to cancel animation): `enter-cancelled`, `leave-cancelled`
+- i.e:
+```vue
+<template>
+  <button type="button" @click="flag= !flag">Toggle</button>
+
+  <transition
+    @before-enter="beforeEnter"
+    @enter="enter"
+    @after-enter="afterEnter"
+    @before-leave="beforeLeave"
+    @leave="leave"
+    @after-leave="afterLeave"
+    >
+    <h2 v-if="flag">Hey</h2>
+  </transition>
+</template>
+
+<script>
+export default {
+  name: 'App',
+  data() {
+    return {
+      flag: true,
+    };
+  },
+  methods: {
+    beforeEnter(el) {
+      console.log('before-enter event fired',el)
+    },
+    enter(el, done) {
+      console.log('enter event fired',el)
+      done();
+    },
+    afterEnter(el) {
+      console.log('after-enter event fired',el)
+    },
+    beforeLeave(el) {
+      console.log('before-leave event fired',el)
+    },
+    leave(el, done) {
+      console.log('leave event fired',el)
+      done();
+    },
+    afterLeave(el) {
+      console.log('after-leave event fired',el)
+    },
+  },
+};
+```
+- we will have a total of 6 functions
+- each function is passed in an object called element
+- the element argument contains info about the element that is currently being animated; you have complete freedom to change any of the properties on this object
+- there is one more argument we can add, called `done`
+- this parameter can only be used in 2 of the 6 functions: the `enter` and `leave` functions
+- you're meant to perform the animation in both functions, but vue won't know when your animation is complete
+- the `done` argument is a callback function that will tell Vue the animation is finished playing
+- after this function has been called, Vue will proceed with adding or removing the element; you must call this function so that vue can do its job properly
+
+- documentation for Web Animations API: [Web Animations API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API/Using_the_Web_Animations_API)
+- this API allows us to perform animations efficiently and it's even more efficient than CSS
+- an animation can only be played on an element
+- i.e JS Zoom Animation (if the element is entering the document, it'll zoom into place, if it's leaving, it'll zoom out):
+```vue
+  //App.vue
+  enter(el, done) {
+    console.log('enter event fired',el)
+    const animation = el.animate([{ transform: "scale3d(0,0,0)" }, {}], {
+      duration: 1000,
+    });
+    animation.onfinish = () => {
+      done();
+    }
+  },
+  leave(el, done) {
+    console.log('enter event fired',el)
+    const animation = el.animate([{}, { transform: "scale3d(0,0,0)" }], {
+      duration: 1000,
+    });
+    animation.onfinish = () => {
+      done();
+    }
+    },
+```
+- the `animate()` function exists only on DOM objects, so it's not specific to Vue
+- this will animate the element it's been called on
+- it has 2 arguments:
+  - the first one is an array of properties to animate
+    - we can add as many objects as we want in the array
+    - each object can be filled with CSS properties
+  - the second argument we can pass is an object of settings
+    - this will aloow us to change how the animation behaves from the duration to iterability
+- the `animate()` function will return an object with events we can listen for
+- the `onfinish` event gets emitted when the animation is finished
+- the value for this must be a function that will be called when the animation is complete
+- inside this function we'll call the `done()` function to let Vue know we're finished
+- Vue prefers that you use CSS animations over JS animations; 
+  - because of this, Vue will check if you have a CSS animation for the transition
+  - if you don't, it will use your JS animation
+  - because of this, youre animation takes up more resources than it has to
+  - we can tell Vue directly we don't have a CSS animation by adding in the `<transition>` component the following property: `:css="false"`
+  - this property will instruct Vue not to check for css animation
+  - i.e:
+```vue
+  <transition
+      @before-enter="beforeEnter"
+      @enter="enter"
+      @after-enter="afterEnter"
+      @before-leave="beforeLeave"
+      @leave="leave"
+      @after-leave="afterLeave"
+      :css="false"                  <---
+  >
+```
+
+# CSS and JS Transitions
+
+- we have the option of using both CSS classes and JS hooks to perform different jobs
+- for example, you may use them to perform background tasks while the animation is handled with CSS (`css` property must be set to `true`)
+- i.e:
+```vue
+<template>
+  <button type="button" @click="flag= !flag">Toggle</button>
+  <transition
+    @before-enter="beforeEnter"
+    @enter="enter"
+    @after-enter="afterEnter"
+    @before-leave="beforeLeave"
+    @leave="leave"
+    @after-leave="afterLeave"
+    :css="true"                 <---
+    name="fade"                 <---
+    >
+    <h2 v-if="flag">Hey</h2>
+  </transition>
+</template>
+
+<script>
+export default {
+  name: 'App',
+  data() {
+    return {
+      flag: true,
+    };
+  },
+  methods: {
+    beforeEnter(el) {
+      console.log('before-enter event fired',el)
+    },
+    enter(el) {
+      console.log('enter event fired',el)
+    },
+    afterEnter(el) {
+      console.log('after-enter event fired',el)
+    },
+    beforeLeave(el) {
+      console.log('before-leave event fired',el)
+    },
+    leave(el) {
+      console.log('enter event fired',el)
+    },
+    afterLeave(el) {
+      console.log('after-leave event fired',el)
+    },
+  },
+};
+</script>
+
+<style>
+h2 {
+  width: 400px;
+  padding: 20px;
+  margin: 20px;
+}
+.fade-enter-from {
+  opacity: 0;
+}
+.fade-enter-active {
+  transition: all 1s linear;
+}
+.fade-leave-to {
+  transition: all 1s linear;
+  opacity: 0;
+}
+.zoom-enter-active {
+  animation: zoom-in 1s linear forwards;
+  transition: all 1s linear;
+}
+.zoom-leave-active {
+  animation: zoom-out 1s linear forwards;
+  transition: all 1s linear;
+}
+.zoom-enter-from {
+  opacity: 0;
+}
+.zoom-leave-to {
+  opacity: 0;
+}
+
+@keyframes zoom-in {
+  from {
+    transform: scale(0, 0);
+  }
+  to {
+    transform: scale(1, 1);
+  }
+}
+
+@keyframes zoom-out {
+  from {
+    transform: scale(1, 1);
+  }
+  to {
+    transform: scale(0, 0);
+  }
+}
+</style>
+```
+
+# Animating a List
+- the `transition` component only works with single elements
+- `transition-group` component is specifically for animating items and loop
+  - you can't use the `mode` property
+- the `key` attribute will help Vue to identify which item in the array belongs to which element
+- Vue will add a class called `*-move` to elements that are being moved over
+- Vue will prepand the name of the transition to the generated class name (i.e `fade-mode`)
+- i.e:
+```vue
+  .fade-move {
+    transition: all 1s linear;
+  }
+  
+  .fade-leave-active {
+    position: absolute;
+  }
+```
+- by using `absolute` positioning, the item fading away will give up its space, forcing the other elements to move up
+
+# Transition CSS Class Names
+
+- *Animate.css* is a library that comes with predefined animations that can be used in any application
+- documentation: [Animate.css](https://animate.style/)
+- we can load animate.css through an external source: https://cdnjs.com/libraries/animate.css
+  - to do this we need to add the following line in public/index.html file: `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">`
+  - to completely overwrite the names, we can use the following properties:
+    - `enter-from-class=""`
+    - `enter-active-class=""`
+    - `enter-to-class=""`
+    - `leave-from-class=""`
+    - `leave-active-class=""`
+    - `leave-to-class=""`
+  - each class can be explicitely set by defining these properties on the `transition-group` component
+  - i.e:
+```vue
+  // App.vue
+    <transition-group name="fade"
+      enter-active-class="animate__animated animate__flipInX"
+      leave-active-class="animate__animated animate__flipOutX"
+    >
+    //[..]
+  <style>
+  .animate__flipOutX {
+    position: absolute;
+  }
+
+  .animate__animated {
+    animation-duration: 1.5s;
+  }
+```
