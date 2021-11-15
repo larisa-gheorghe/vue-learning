@@ -2464,3 +2464,17 @@ h2 {
 - Static assets can be handled in two different ways:
   - Imported in JavaScript or referenced in templates/CSS via relative paths. Such references will be handled by webpack.
   - Placed in the public directory and referenced via absolute paths. These assets will simply be copied and not go through webpack.
+
+
+# Introduction to Vuex
+
+## Yarn
+
+- Yarn is a dependency manager for JS projects (it's similar to npm, but provides a smoother experience for isntalling dependencies)
+- documentation [Yarn](https://classic.yarnpkg.com/en/docs/install#windows-stable)
+  - run: `$ npm i --global yarn`
+  - to check the current version of warn: `$ yarn --version`
+  - to install a package: `$ yarn add <package>`
+- if we want to add vue with yarn, we first need to uninstall it from npm: `$ npm uninstall -g @vue/cli`
+- we can check what packages are installed globally by running the following command: `$ npm list -g --depth 0
+- install vue using yarn: `$ yarn global add @vue/cli`
