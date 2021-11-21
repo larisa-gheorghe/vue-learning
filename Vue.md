@@ -352,7 +352,7 @@ const vm = Vue.createApp({
 - calling `event.preventDefault()` is standard in most apps because you may not want the default browserbehavior to affect your app
 - the event modifiers feature modify the way an event is handled
 - documentation: [Events](https://v3.vuejs.org/guide/events.html)
-- they can be used by adding a dot after the event name; this dot is followed by the modifier you'd like touse:
+- they can be used by adding a dot after the event name; this dot is followed by the modifier you'd like to use:
         `<input type="text" :value="lastName" @input.prevent="updateLastName('Last name event triggered!',$event)">`
 - adding this is the equivalent of calling the prevent default method in our function
 
@@ -2478,3 +2478,106 @@ h2 {
 - if we want to add vue with yarn, we first need to uninstall it from npm: `$ npm uninstall -g @vue/cli`
 - we can check what packages are installed globally by running the following command: `$ npm list -g --depth 0
 - install vue using yarn: `$ yarn global add @vue/cli`
+
+## Vue UI
+
+- provides an interface for faster development experience
+- to start it we run: `$ vue ui`
+- we create a new project called `music`
+- vue installed the modules we selected and configure them for us
+- documentation for style guide (list of recommended guidelines for how we should structure, name and write our code): [Style Guide](https://v3.vuejs.org/style-guide/)
+- `.browserslistrc` file: to store the list of browsers to support inside a single file
+  - browsers list repository: https://github.com/browserslist/browserslist
+- `.editorconfig` file: if present, the ssettings in an editor will update to match the settings specified in the file
+  - documentation: https://editorconfig.org/
+  - if we work alone, we can delete this file
+- `.eslintrc.js` configuration file
+
+## Tailwind
+
+- is a CSS framework for rapidly designing and building sites that focuses on a utility-first approach
+- it provides a set of classes that makes it easier to present content
+- it does not come with UI elements, it focuses on utility
+- this means that it will define hundreds of classes; each class will modify one property
+- documentation: [Tailwind](https://tailwindcss.com/)
+- PurgeCSS library works hand in hand with Tailwind: [PurgeCSS](https://purgecss.com/)
+  - it will scan your HTML for classes that are being used, then removed unused CSS from your stylesheets
+  - this process is automatically done for us by installing the Tailwind module
+- we can add in Vue UI the following pluggin: `vue-cli-plugin-tailwind`, the minimal option
+- the minimal option will give us a basic tailwind config
+- Tailwind configuration documentation: [Tailwind configuration](https://tailwindcss.com/docs/configuration)
+
+## Loading Assets
+
+- you can load assets by either importing them directly or linking them in the public directory
+- there are two ways to store files:
+  - the `src` directories can store asset files
+    - if you store asset files in this dir, Webpack will process them
+- if you want your files to be copied over without going through other third party libraries like PostCSS and SAS, you should place them inside the `public` directory
+- documentation: [Static Assets Handling](https://cli.vuejs.org/guide/html-and-static-assets.html#static-assets-handling)
+
+## State
+
+- state refers to the data for your application, typically retrieved from a db or API
+- you can use the state to store application data too (ie: show dropdown, show modal, current page)
+- state is just another way of saying data that is tracked while the application is active
+- it's not just the data in a bd, but the data used to keep track of what should be happening inside the application
+- the data property can be considered a way to store lcoal state; it's data that only one component needs
+- global state is when data is shared across multiple components
+- Vue allows you to create your own library to manage state on a global level
+- there are also library that can already do that for us; the most popular solution is Vuex
+- `Vuex` is a state management library inspired bu Flux implementation
+  - it will allow you to store your data in a single location (one centralized location)
+  - you won't have to pass it down from component to component
+  - the state is directly accessible to all components
+  - any changes to the data are reflected in all components
+  - centralized state is completely optional, even if you have it installed
+  - components can still have their own set of data
+  - to install Vuex: `npm install vuex --save` or `uarn add vuex`
+
+## Vuex Configuration
+
+- Vue plugins are a way to add global-level functionality to Vue
+- plugins can add global methods, properties, components, assets, directives, filters, transitions etc
+- to use it you need to load a module and then tell Vue to use it
+- there are 2 steps to install a plugin in our project:
+  - first we need to import it
+    - every plugin must be registered before the Vue instancce is created, otherwise we might not have access to every future a plugin provides
+- configuration file for the Vuex library: `src/store/index.js`
+
+## Splitting the tempalte into components
+
+- documentation: [Component files](https://v3.vuejs.org/style-guide/#component-files-strongly-recommended)
+
+
+## Vuex Mutations
+
+- a mutation refers to changing/updating the state
+- mutations allow all components to change the state consistently
+- it's beneficial to eprform a mutation inside the store
+- the `.commit()` function will allow you to call a mutation function from the store;
+  - it required the name of the mutation you'd like to run
+- `mappers` are functions that generate an object;
+  - Vuex mappers will create objects that map to the properties in the store
+- `getters` are a way to access state properties from the store
+  - using a getter is optional
+  - they are accessible in all components
+  - they will only update is the state changes
+  - getter functions are required to return a value
+- an alternative to getters is to map the state
+  - getters are better for performing a calculation on/with a state property
+  - mapping the state is better for retrieving a state property
+
+## Aliases
+
+- `mapMutations`, `mapGetter` and `mapState` allow you to create an alias for the values you'd like to extract
+- ie:
+```vue
+export default {
+  name: 'Auth',
+  computed: {
+    ...mapState({
+      modal: 'authModalShow',   <--- the name of the alias is 'modal'
+    }),
+    // ...mapState(['authModalShow']),
+```
