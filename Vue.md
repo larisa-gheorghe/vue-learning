@@ -1367,7 +1367,7 @@ module.exports = {
 - instalation: `$ sudo npm install -g @vue/cli`
 - the model we installed will create a new set of commands that will allow us to set up a new vue project
 - we can run this to see what commands we can use with vue: $ vue
-- to create a project: vue create components
+- to create a project: `$ vue create components`
   - we select Default(Vue 3)      <--- is the preset with the least amount of tools
 - a server will be necessary because browsers impose limitations on files open directly in the browser
 - to remove any limitations, we'll need to deliver the files via a server
@@ -2581,3 +2581,133 @@ export default {
     }),
     // ...mapState(['authModalShow']),
 ```
+
+## Form Validation
+
+- documentation: [Form Validation](https://vuejs.org/v2/cookbook/form-validation.html)
+- Vue libraries used for form validation:
+  - vuelidate
+  - VeeValidate (what we will use)
+- we can install VeeValidate from Vue UI (in *Dependencies* tab) or from the terminal (`yarn add vee-validate@next`)
+- we need to create a new directory called `includes` in `src`; this is where we'll define our custom plugins
+- the `<form>` element needs to be replaced with `<vee-form>`
+- `<vee-field>` component is responsible for validating a single input; 
+  - it will generate an `<input>` tag by default
+  - if we want to overwrite the element it generates, we can add an attribute called `as`
+  - the value for this attribute in the name of the tag we want the component to generate
+  - ie: `<vee-field as="select">`
+  - documentation: [Field Component](https://vee-validate.logaretm.com/v4/api/field)
+  - any attributes you add to the component are automatically added to the element the component outputs
+- there are 4 steps for validating the input
+  - use the `<Field />` component
+  - assign a name to the input
+  - add the rules 
+  - handle the errors
+- a rule is a function that will take in the input value; the value returned by the function will let the validation library know if the input is valid
+  - by default, vee-validate does not assume what requirements and input must meet to be valid
+  - documentation: [Rules](https://vee-validate.logaretm.com/v4/guide/global-validators#@vee-validate/rules)
+  - the official rules are installable via a separate package
+
+## Slot Properties
+
+- documentation: [Scoped Slots](https://v3.vuejs.org/guide/component-slots.html#scoped-slots)
+- `<slot>` serve as content distribution outlets in component templates. 
+- they are handy for passing on data to the parent scope
+- shortcut for `v-slot` is `#`: `<hello-world v-slot="v">` or `<hello-world #default="v">`
+- when using the shortcut, we're required to set the name of the slot
+- if we don't set a name for our slot, it will be set to default
+
+## Rendering Multiple Error Messages
+
+- the `bails` property will tell `vee-field` component not to use the fast exit strategy: `:bails="false"` 
+- this means every rule will be checked, even if a previous rule was broken
+- it's important to bind the `bails` property, because you want the component to interpret the value as a false boolean value
+- we need to customize the behavior of the `field` component if we want to output multiple errors.
+- the `field` component has a `slot` we can take advantage of; it's the only way we'll be able to output multiple error messages
+- `:initial-values="userData"` - so that the form component will use this object to apply initial values to the respective fields in the slot content
+
+## Customer Error Messages
+
+- we are using rules from the vee-validate/rules package
+- the functions we're importing don't return a string if a validation fails, they're returning a false boolean value
+- vee-validate provides a way for overwriting a message
+- there are some limitations:
+  - we can only overwrite messages from global rules
+  - this will only work for functions that return a false boolean value
+  - if the functions from the package returned an actual string, we wouldn't be able to override those messages
+- the `configure` function can be used to configure the default behavior of the validation library
+- ie:
+```js
+import {
+  Form as VeeForm, Field as VeeField, defineRule, ErrorMessage, configure,
+} from 'vee-validate';
+import {
+  required, min, max, alpha_spaces as alphaSpaces, email,
+  min_value as minVal, max_value as maxVal, confirmed, not_one_of as excluded,
+} from '@vee-validate/rules';
+
+export default {
+  install(app) {
+    app.component('VeeForm', VeeForm);
+    app.component('VeeField', VeeField);
+    app.component('ErrorMessage', ErrorMessage);
+
+    defineRule('required', required);
+    defineRule('tos', required);
+    defineRule('min', min);
+    defineRule('max', max);
+    defineRule('alpha_spaces', alphaSpaces);
+    defineRule('email', email);
+    defineRule('min_value', minVal);
+    defineRule('max_value', maxVal);
+    defineRule('passwords_mismatch', confirmed);
+    defineRule('excluded', excluded);
+    defineRule('country_excluded', excluded);
+
+    configure({
+      generateMessage: (ctx) => {
+        const messages = {
+          required: `The field ${ctx.field} is required.`,
+          min: `The field ${ctx.field} is too short.`,
+          max: `The field ${ctx.field} is too long.`,
+          alpha_spaces: `The field ${ctx.field} may only contain alphabetical characters and spaces.`,
+          email: `The field ${ctx.field} must be a valid email.`,
+          min_value: `The field ${ctx.field} is too low.`,
+          max_value: `The field ${ctx.field} is too high.`,
+          excluded: `You are not allowed to use this value for the field ${ctx.field}.`,
+          country_excluded: 'Due to restrictions, we do not accept users from this location.',
+          passwords_mismatch: "The passwords don't match.",
+          tos: 'You must accept the Terms of Service.',
+        };
+
+        const message = messages[ctx.rule.name] ? messages[ctx.rule.name] : `The field ${ctx.field} is invalid.`;
+        return message;
+      },
+    });
+  },
+};
+```
+
+## Validation Triggers
+
+- validation is performed on one of four occasions:
+  - after the change event
+  - if the v-model directive is applied to an input, when the model is changed
+  - after the blur event
+  - after form submission
+- we can change the validation trigger on all fields by updating the object we passed into the `configure()` function
+- there are four options we can set to change the default behavior:
+  - `validateOnBlur: true,` - it will tell vee-validate if it should validate a field on the blur event; by default it's set to `true`
+  - `validateOnChange: true` - it will tell vee-validate if it should validate a field on the change event; by default it's set to `true`
+  - `validateOnInput: false` - the input event is fired whenever the input changes ( it will fire on every keystroke)
+    - the moment a user presses a key, if the value is invalid, an error will appear immediately
+  - `validateOnModelUpdate: true` - it will tell vee-validate to validate the input whenever the value changes internally through the `v-model` directive
+
+
+# Firebase
+
+- a backend solution for mobile applications; it can also be used for Web applications
+- it will store your data, authenticate users, store files, provide analytics and much more
+- doc: [Firebase](https://firebase.google.com/)
+  - created a new project: https://console.firebase.google.com/project/music-9ca17/overview
+  - create a Firestore Database in test mode: https://console.firebase.google.com/project/music-9ca17/firestore/data/~2F
