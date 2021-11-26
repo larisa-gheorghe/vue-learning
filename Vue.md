@@ -2711,3 +2711,109 @@ export default {
 - doc: [Firebase](https://firebase.google.com/)
   - created a new project: https://console.firebase.google.com/project/music-9ca17/overview
   - create a Firestore Database in test mode: https://console.firebase.google.com/project/music-9ca17/firestore/data/~2F
+
+# Rules
+
+- Firebase has an editor we can use to modify the rules
+- the syntax is similar to JS object syntax; Firebase adopt similar syntax, but there are differences
+- creating rules is similar to creating CSS properties from principle point of view
+- rules can be applied universally or to specific resources in you db
+- any time a request is made to the db, it must be to a specific resource
+- the `match` keyword can be used to check if a request is being made to a particular resource
+```
+rules_version = '2';                        <--- the version determines the syntax you may use
+service cloud.firestore {                   <--- first we select a service; then we can begin to add the rules (you can have different rules for different services)
+  match /databases/{database}/documents {
+    match /{document=**} {                  <--- this means that the rules inside this condition will apply to any document
+      allow read, write: if                 <--- this rule allows anyone on the internet to view, edit and delete all data in your db
+          request.time < timestamp.date(2021, 12, 24);      <-- we need to modify this, or it will expire in 30 days
+    }
+  }
+}
+```
+- documentation: [Firebase Security Rules](https://firebase.google.com/docs/rules)
+
+# Firebase SDK
+
+- is a library that will assist us with communicating with Firebase products
+- SDK = Software Development Kit
+- instalation documentation: [SDK Instalation](https://firebase.google.com/docs/web/setup)
+  - we have the option of using a CDN or installing the module
+  - we're going to use the module so that we can bundle the library: `$ yarn add firebase@8`
+- the firebase module needs to be imported and configured before we can use it
+- we can configure Firebase directly in the `src/main.js` file or we can have a separate configuration file
+- created a file called `src/includes/firebase.js`
+- to generate a config file, we can use the `Project Overview` and select 'code'
+- documentation [firebase.auth.Auth](https://firebase.google.com/docs/reference/js/v8/firebase.auth.Auth)
+
+# Exporting Services
+
+- we can refactor our Firebase configuration to export services
+- Firestar is the name of their official db
+- the Firebase SDK comes with a module for interacting with the Firestore API
+- the functions for interacting with the db can be enabled by importing the package: `import 'firebase/firestore';`
+- `buckets` = are the physical location where your data is stored
+  - you can create multiple buckets if you're on a premium plan
+- `collections` = are objects in Firestar
+  - they give you a way to organize data (records in a collection)
+  - Firebase requires you to select a collection before performing any actions on the database
+- `documents` = are the individual records in a collection
+  - multiple documents can be stored in a single collection
+
+# Understanding Authentication
+
+- Authentication is mostly handled by the server (Firebase)
+- Firebase can take care of hashing the password, sending a confirmation email or storing the user's data
+- the role of frontend (vue) is to send the login data to the server; the server responds with a token and then we store that token
+- we will use Local Storage to store the token; it it a Web API that comes with your browser by default
+- stateless authentication:
+  - the server does not actively keep track of who's logged in
+  - a token is used to verify the user instead
+- we need to modify the rules from Firestore Db as below:
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read: if true;
+      allow write: if request.auth.uid != null;
+    }
+  }
+}
+```
+- documentation: [rules.firestore.Request](https://firebase.google.com/docs/reference/rules/rules.firestore.Request#auth)
+
+# Actions
+
+- the main purpose of an action is to commit a mutation
+- mutations are functions that can mutate the state
+- differences between mutations and actions:
+  - the purpose of a mutation is to change the state; they must be syncronous
+  - the purpose of an action is to perform business logic and commit mutations; can be asyncronous
+  - they are both functions
+- advantage of actions:
+  - available to all components
+  - can be asynchronous
+  - can commit multiple mutations
+- actions vs components:
+  - define logic in components if the changes affect the component or it's children
+  - define logic in actions if the changes affect the store/state
+- we can separate the logic in our code into two parts:
+  - the logic for manipulating the component 
+  - the logic for manipulating the state (we will put this code into an action function)
+- documentation: [signInWithEmailAndPassword](https://firebase.google.com/docs/reference/js/v8/firebase.auth.Auth#signinwithemailandpassword)
+- `window.location()` - this object is a global JS object that's not specific to vue; the browser defines it.
+  - it comes with a method called `.reload` that will refresh the page
+- `auth.signout()` - Firebase provides a method which will sign the user out of the system
+  - it's going to clear the credentials from the storage
+  - Firebase will revoke the token that was stored internally if the user attempts to hang on to it.
+
+# JSON Web Tokens
+
+- tokens are encoded strings for storing data
+- they're used to transport data between the client and the server
+- one of the most significant advantages of tokens is that they're digitally signed
+- documentation: [JSON Web Tokens](https://jwt.io/)
+- web tokens can be used with almost any programming language available
+- it's important to install an SSL certificate to help secure the connection between the client and server
+- SSL is a standard for encrypting data when it's sent between the client and server
