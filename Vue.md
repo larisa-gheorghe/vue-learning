@@ -2808,7 +2808,7 @@ service cloud.firestore {
   - it's going to clear the credentials from the storage
   - Firebase will revoke the token that was stored internally if the user attempts to hang on to it.
 
-# JSON Web Tokens
+## JSON Web Tokens
 
 - tokens are encoded strings for storing data
 - they're used to transport data between the client and the server
@@ -2817,3 +2817,18 @@ service cloud.firestore {
 - web tokens can be used with almost any programming language available
 - it's important to install an SSL certificate to help secure the connection between the client and server
 - SSL is a standard for encrypting data when it's sent between the client and server
+
+# Routing
+
+- documentation: [Vue Router](https://next.router.vuejs.org/)
+- by default, routing is not provided or configured for you; you need to install a module to get routing capabilities for your app
+- to install it: `npm install vue-router` or `yarn add vue-router`
+- history mode documentation: [Different History modes](https://next.router.vuejs.org/guide/essentials/history-mode.html)
+- `<router-link>` component is a global component registered by the vue-router plugin
+  - it will create an anchor tag
+  - the anchor tag will be listening for click events; if a click is detected, the default behavior will be overwriten
+  - the router will handle the redirect rather than the browser
+  - documentation: https://next.router.vuejs.org/api/
+- navigation guards documentation: [Navigation Guards](https://next.router.vuejs.org/guide/advanced/navigation-guards.html)
+- route meta fields documentation: [Route Meta Fields](https://next.router.vuejs.org/guide/advanced/meta.html)
+- dependency cycle = is when two modules are importing each other as dependencies
