@@ -2832,3 +2832,55 @@ service cloud.firestore {
 - navigation guards documentation: [Navigation Guards](https://next.router.vuejs.org/guide/advanced/navigation-guards.html)
 - route meta fields documentation: [Route Meta Fields](https://next.router.vuejs.org/guide/advanced/meta.html)
 - dependency cycle = is when two modules are importing each other as dependencies
+
+# Uploading Files
+
+- the client:
+  - transfer the file to the Server
+  - provide a way to access the file
+- the server:
+  - validate the Upload 
+  - Store the File
+  - file permissions
+  - create the API for the client to send the file
+- listening events:
+'''
+  @drag=""        // is emitted when the element it's applied to is being dragged
+  @dragstart=""   // when an element is starting to be dragged
+  @dragend=""     // when an element is no longer being dragged
+  @dragover=""    // while the user is hovering something over the element the event is applied to
+  @dragenter=""   // when the user begins to drag something onto the element
+  @dragleave=""   // when the item that was previously being dragged over the element is no longer being dragged over it
+  @drop="">       // when the user has released the element or text that was being dragged
+'''
+  - we'll need to add .prevent.stop modifiers to prevent unexpected behavior when a file is dropped onto an element
+  - by default most browsers will load the file in the browser depending on the file type
+  - Firebase allows us to upload multiple files in parallel, but they need to be passed in one at a time
+  - Mime Type = a label to help identify the type of data in a file
+    - broken into two parts; the `type` and `subtype` separated by a slash(`/`)
+    - ex: audio/mp3, audio/ogg, application/msword, video/avi
+    - supported formats: https://en.wikipedia.org/wiki/HTML5_audio#Supported_audio_coding_formats
+  - Firebase Security Rules for Cloud Storage language: https://firebase.google.com/docs/storage/security/core-syntax
+  - Upload files with Cloud Storage Web: https://firebase.google.com/docs/storage/web/upload-files
+  - Reference = an object that points to a location in your application
+    - allows you to read/write references
+    - create new references:
+    ```
+    const storageRef = storage.ref();
+    const songsRef = storageRef.child(`songs/${file.name}`);
+    ```
+  - Snapshot = an object that is a copy of a location in your application
+    - read-only
+    - immutable (cannot be updated)
+    ```
+    const task = songsRef.put(file);
+    ```
+  - References and snapshots can read the data in the application;
+  - Snapshots are read-only, but are memory efficient
+  - Drag n Drop support: https://caniuse.com/dragndrop
+  - Why references:
+    - allow you to select components
+    - components are reusable; this makes it harder to select elements
+    - references are scoped to their instance
+  - With `Reactivity`: Data Changes -> Vue instance is Updated -> Vue updates the template -> Template gets rendered onto the DOM
+  - With `References`: Directly Access the DOM without updating the Vue Instance
