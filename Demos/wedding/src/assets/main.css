@@ -9,3 +9,96 @@ h1, h2 {
 .form-components {
     font-family: 'Fredericka the Great', cursive;
 }
+
+.bla {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height:100vh;
+}
+
+.envelope {
+    position: relative;
+    cursor: pointer;
+}
+
+.back {
+    position: relative;
+    width:520px;
+    height: 400px;
+}
+  
+.letter {
+    position: absolute;
+    background-color: #fff;
+    width:500px;
+    height: 380px;
+    top:10px;
+    left:10px;
+    transition: .2s;
+}
+     
+.text {
+    text-align: center;
+    font-size: 15px;
+    font-family: 'WindSong', cursive;
+    margin-top:20px;
+    font-weight: lighter;
+} 
+  
+.front {
+    position: absolute;
+    border-right: 270px solid #ffb7c3;
+    border-top: 200px solid transparent;
+    border-bottom: 200px solid transparent;
+    height:0;
+    width:0;
+    top:0;
+    left:250px;
+    z-index:3;
+}
+
+.front:before {
+    content:"";
+    position: absolute;
+    border-left: 260px solid #ffb7c3;
+    border-top: 200px solid transparent;
+    border-bottom: 200px solid transparent;
+    height:0;
+    width:0;
+    top:-200px;
+    left:-250px;
+}
+ 
+.front:after {
+    content:"";
+    position: absolute;
+    border-bottom: 210px solid #ffb7c3;
+    border-left: 260px solid transparent;
+    border-right:260px solid transparent;
+    height:0;
+    width:0;
+    top:-10px;
+    left:-250px;
+}
+  
+.top {
+    position: absolute;
+    border-top: 200px solid #eec6ca;
+    border-left: 260px solid transparent;
+    border-right:260px solid transparent;
+    height:0;
+    width:0;
+    top:0;
+    transform-origin: top;
+    transition: .4s;
+}
+
+.envelope:hover .top {
+    transform: rotateX(160deg);
+}
+  
+.envelope:hover .letter {
+    transform: translateY(-100px);
+    z-index:2;
+}
