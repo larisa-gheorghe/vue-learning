@@ -2885,3 +2885,10 @@ service cloud.firestore {
   - With `Reactivity`: Data Changes -> Vue instance is Updated -> Vue updates the template -> Template gets rendered onto the DOM
   - With `References`: Directly Access the DOM without updating the Vue Instance
   - References can't change the vue instance or its data
+
+
+# Infinite Scrolling
+
+offsetHeight = this property contains the height of the entire page
+innerHeight = contains the height of the viewable area in the browser ( how much of the page the user is able to see)
+scrollTop = contains the distance from the top of the page to the top of the viewable area
