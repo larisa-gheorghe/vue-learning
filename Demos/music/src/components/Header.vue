@@ -34,6 +34,15 @@
                 </li>
               </template>
             </ul>
+            <ul class="flex flex-row mt-1 ml-auto">
+              <li>
+                <select class="px-2 text-white bg-transparent" v-model="$i18n.locale">
+                  <option v-for="(locale, i) in locales" :key="`Locale${i}`" :value="locale">
+                    {{ locale }}
+                  </option>
+                </select>
+              </li>
+            </ul>
           </div>
         </nav>
     </header>
@@ -44,6 +53,11 @@ import { mapMutations, mapState } from 'vuex';
 
 export default {
   name: 'Header',
+  data() {
+    return {
+      locales: ['en', 'fr'],
+    };
+  },
   computed: {
     ...mapState(['userLoggedIn']),
   },

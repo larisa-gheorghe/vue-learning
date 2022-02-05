@@ -810,6 +810,11 @@ Apply changes to the template
   - we are provided two hooks during this process (mainly used for debugging)
     - `beforeUpdate`   - gets triggered after the data has been updated but has not beenapplied to the template
     - `updated`        - runs once the template is patched with the updated data
+- hook arguments:
+  - `el`        - the element the binding sits on
+  - `binding`   - an object which contains the arguments that are passed into the hooks
+  - `vnode`     - allows you to refer directly to the node in the virtual DOM if you need to
+  - `prevNode`  - the previous `vnode` object before the directive was updated.(applies to `beforeUpdate` and `updated` hooks only)
 - i.e:
 ```javascript
 //app.js
@@ -2892,3 +2897,83 @@ service cloud.firestore {
 offsetHeight = this property contains the height of the entire page
 innerHeight = contains the height of the viewable area in the browser ( how much of the page the user is able to see)
 scrollTop = contains the distance from the top of the page to the top of the viewable area
+limit() function = will limit how many results are returned by the API
+
+# Dynamic Route Matching with Params
+
+- documentation: https://next.router.vuejs.org/guide/essentials/dynamic-matching.html
+
+# Howler.js
+
+- Howler is a JS library for playing audio files in the browser
+- documentation: https://howlerjs.com/
+
+
+# Internationalization (i18n)
+
+- is the process of translating your application
+- vue I18n plugin: https://vue-i18n-next.intlify.dev/
+- we can add it via command line: `# vue add i18n`
+- pluralization: https://vue-i18n-next.intlify.dev/guide/essentials/pluralization.html
+- number formatting: https://vue-i18n-next.intlify.dev/guide/essentials/number.html
+- numer format: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat
+- component interpolation: https://vue-i18n-next.intlify.dev/guide/advanced/component.html
+
+
+
+
+                <!-- <select class="px-2 text-white bg-transparent" v-model="$i18n.locale">
+                  <option v-for="(lang, i) in langs" :key="`Lang${i}`" :value="lang">
+                    {{ lang }} -->
+                  <select class="px-2 text-white bg-transparent">
+                    <option v-for="locale in locales" :key="locale" @click="changeLocale(locale)">
+                      {{ locale }}
+                    </option>
+                </select>
+              </li>
+            </ul>
+          </div>
+        </nav>
+    </header>
+</template>
+
+<script>
+import { mapMutations, mapState } from 'vuex';
+
+export default {
+  name: 'Header',
+  // data() {
+  //   return {
+  //     langs: ['en', 'fr'],
+  //   };
+  // },
+  data() {
+    return {
+      locales: ['en', 'fr'],
+    };
+  },
+  computed: {
+    ...mapState(['userLoggedIn']),
+  },
+  methods: {
+    ...mapMutations(['toggleAuthModal']),
+    signout() {
+      this.$store.dispatch('signout');
+
+      // console.log(this.$route);
+      if (this.$route.meta.requiresAuth) {
+        this.$router.push({ name: 'home' });
+      }
+    },
+    changeLocale(locale) {
+      if (this.$i18n.locale !== locale) {
+        this.$i18n.locale = locale;
+      }
+    },
+    // signout() {
+    //   this.$store.dispatch('signout');   <-- this function does the same thing as the one above
+    // },
+    // toggleAuthModal() {
+    //   this.$store.commit('toggleAuthModal');
+    // },
+  },
