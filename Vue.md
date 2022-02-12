@@ -3009,3 +3009,45 @@ limit() function = will limit how many results are returned by the API
 - popular services for deploying applications: Hiroku, Digital Oceam, AWS and Netlify
 - we will use Vercel
 - to isntall it: `$ yarn global add vercel`
+
+# Testing
+
+- testing = the process of checking that an application is functioning as expected
+- 2 types of testing:
+  - manual
+  - automated
+- types of tests:
+  - unit test(60%): testing smaller sections of your application, like functions or components
+    - fast
+    - help developers better understand the purpose of a function
+    - makes it difficult to refactor your code
+    - you can only test individual sections of your code; unable to test if multiple sections can work together
+  - snapshot test(30%): is a program that will take two snapshots of your application and compare them; if it spots any difference, it'll consider the test a failure
+    - different browsers/OS can throw errors even if the applciation in the snapshots are identical
+  - end-to-end(E2E)(10%): is a type of test used to check if the flow of application from start to finish is behaving correctly
+    - they are slow
+    - difficult to debug since you may not know the exact reason a test fails
+    - some tests fail because a service/API you're using is down. Meaning there really isn't an error to begin with
+
+# Jest
+
+- is a framework developed by Facebook
+- other popular options: Mocha, Jasmine
+- documentation: https://jestjs.io/
+- Jest doesn't do E2E testing
+- advantages of using a testing framework:
+  - generates a test report
+  - helps with organizing tests
+  - comes with functions for performing testing
+- problems:
+  - does not run in the browser; runs in Node
+  - comes with its own environment buit on top of JSDOM
+  - does not understand Vue component files
+  - limited syntax
+- transformers = are functions that take care of compiling code from files to files that Jest will be able to understand
+  - they need to be installed
+  - they don't come bundled with Jest
+  - we will use `babel-jest` and `vue-jest` transformers
+- test assertion = an expression that evaluates to either true of false
+  - if the assersion evaluates to false, the test fails
+- expect function documentation: https://jestjs.io/docs/expect
