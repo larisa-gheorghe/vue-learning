@@ -2919,61 +2919,93 @@ limit() function = will limit how many results are returned by the API
 - numer format: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat
 - component interpolation: https://vue-i18n-next.intlify.dev/guide/advanced/component.html
 
+# Progressive Web Apps
 
+- it's a set of features that bring existing mobile features onto the web
+- there are features available in mobile apps that increase user retention
+- mobile features:
+  - open from Home
+  - offline Support
+  - background sync
+  - push notifications
+  - access to hardware
+  - geolocation
+- there are APIs available in browsers we can leverage to bring a mobile experience to our mobile users
+- Progressive Web App Characteristics:
+  - capable: it must be capable of utilizing the features on any given device
+  - reliable:
+    - performance makes a significant impact on user experience
+    - Progressive Web Apps are capable of syncronizing the state of an application with the server after connectivity is restored
+  - installable
+- PWA(Progressive Web Apps) vs SPA(single page apps)
+  - a SPA is an app that will dinamically rewrite the current web page with new data; the user doesn;t have to fetch an entirely new page
+  - PWA is a term used to describe a set of features and APIs in the browser
+  - purely additive
+  - PWA features can be implemented on non-spa sites
 
+## The Manifest File
 
-                <!-- <select class="px-2 text-white bg-transparent" v-model="$i18n.locale">
-                  <option v-for="(lang, i) in langs" :key="`Lang${i}`" :value="lang">
-                    {{ lang }} -->
-                  <select class="px-2 text-white bg-transparent">
-                    <option v-for="locale in locales" :key="locale" @click="changeLocale(locale)">
-                      {{ locale }}
-                    </option>
-                </select>
-              </li>
-            </ul>
-          </div>
-        </nav>
-    </header>
-</template>
+- documentation: https://web.dev/install-criteria/
+- there is a plugin we can use: vue cli plugin pwa
+- changes made by this plugin: 
+  - in main.js: `import './registerServiceWorker';`
+  - `registerServiceWorker.js` file
+  - in the public directory we'll find a new directory called `img/icons`
+    - a PWA must have the same icon in various sizes to account for all screen sizes
+- the plugin will not generate the manifest file until the project has been built
+- manifest files are cached
+- we need to run the build task in the vue ui
+- we won;t be able to preview the app because the build task does not launch a server for builds, we'll need to create a server ourselves manually (for this we can use an extension called 'live server')
+- a new directory will appear called `dist`(distribution)
+- the files in this directory are the files we'll upload when we deploy the project
+- documentation for cli-plugin-pwa: https://cli.vuejs.org/core-plugins/pwa.html
+- Service Worker = is a JS file that runs in the background
+  - it is mainly separate from the application code; because of that, they can run parallel to an application
+  - a service worker will not be blocked from running even if a sunchronous operation is taking place in our app
+  - this is because they run on a separate thread in the background
+  - is primarily used for caching files, pushing notifications and background syncing
+  - limitations:
+    - unable to access the DOM
+    - limited browser support
 
-<script>
-import { mapMutations, mapState } from 'vuex';
+## Workbox
 
-export default {
-  name: 'Header',
-  // data() {
-  //   return {
-  //     langs: ['en', 'fr'],
-  //   };
-  // },
-  data() {
-    return {
-      locales: ['en', 'fr'],
-    };
-  },
-  computed: {
-    ...mapState(['userLoggedIn']),
-  },
-  methods: {
-    ...mapMutations(['toggleAuthModal']),
-    signout() {
-      this.$store.dispatch('signout');
+- caching strategies:
+  - cache, then network ( Client <-> Cache <-> Network)
+  - network, then cache (Client <-> Network <-> Cache)
+- Workbox is a library for adding caching strategies to an app
+- documentation: https://developers.google.com/web/tools/workbox
+- vue cli pwa plugin uses workbox behind the scenes
+- workbox will deliver the files via the cache before using the network
+- data persistance in Firebase:
+  - for firebase data, we want to prioritize the network, because the data may have changed
+  - the Firebase SDK will only use the cache if the user is offline
+  - by default, Firebase will not cache data; we need to turn this feature on ( in firebase.js file: `db.enablePersistence();`)
+  - documentation: https://firebase.google.com/docs/reference/js/v8/firebase.firestore.Firestore#enablepersistence
 
-      // console.log(this.$route);
-      if (this.$route.meta.requiresAuth) {
-        this.$router.push({ name: 'home' });
-      }
-    },
-    changeLocale(locale) {
-      if (this.$i18n.locale !== locale) {
-        this.$i18n.locale = locale;
-      }
-    },
-    // signout() {
-    //   this.$store.dispatch('signout');   <-- this function does the same thing as the one above
-    // },
-    // toggleAuthModal() {
-    //   this.$store.commit('toggleAuthModal');
-    // },
-  },
+# Registering Components Globally
+
+1. Search for component files
+2. Loop through the results
+3. Import each component file
+4. Prep the filename to be a valid component name
+5. Register the component
+
+- lodash library: https://lodash.com/
+
+# Webpack Chunks
+
+- chunk = a file that is separate from the bundle but can still be loaded into the bundle
+- you can group chunks to load at the same time by using: `/* webpackChunkName: "groupedChunk" */`
+
+# Progress Bar
+
+- NProgress.js - is a library
+- documentation: https://ricostacruz.com/nprogress/
+- we need to install is as a dependency
+
+# Deploying an App
+
+- popular services for deploying applications: Hiroku, Digital Oceam, AWS and Netlify
+- we will use Vercel
+- to isntall it: `$ yarn global add vercel`

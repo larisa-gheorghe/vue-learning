@@ -99,7 +99,6 @@ export default {
       try {
         await songsCollection.doc(this.song.docID).update(values);
       } catch (error) {
-        console.log(`error ${error}`);
         this.song_in_submission = false;
         this.song_alert_variant = 'bg-red-500';
         this.song_alert_msg = 'Something went wrong! Try again later';

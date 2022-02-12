@@ -57,7 +57,7 @@ export default {
       try {
         await this.$store.dispatch('login', values);
       } catch (error) {
-        console.log(`error ${error}`);
+        // console.log(`error ${error}`);
         this.login_in_submission = false;
         this.login_alert_variant = 'bg-red-500';
         this.login_alert_msg = 'Invalid login details';

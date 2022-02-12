@@ -59,7 +59,9 @@ export default {
     };
   },
   computed: {
-    ...mapState(['userLoggedIn']),
+    ...mapState({
+      userLoggedIn: (state) => state.auth.userLoggedIn,
+    }),
   },
   methods: {
     ...mapMutations(['toggleAuthModal']),

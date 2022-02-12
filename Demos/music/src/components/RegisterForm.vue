@@ -133,7 +133,7 @@ export default {
       try {
         await this.$store.dispatch('register', values);
       } catch (error) {
-        console.log(`error ${error}`);
+        // console.log(`error ${error}`);
         this.reg_in_submission = false;
         this.reg_alert_variant = 'bg-red-500';
         this.reg_alert_msg = 'An unexpected error occured. Please try again later.';

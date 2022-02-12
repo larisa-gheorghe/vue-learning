@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white rounded border border-gray-200 relative flex flex-col">
     <div class="px-6 pt-6 pb-5 font-bold border-b border-gray-200">
-      <span class="card-title">Upload</span>
+      <span class="card-title">{{ $t('upload.title')}}</span>
       <i class="fas fa-upload float-right text-green-400 text-2xl"></i>
     </div>
     <div class="p-6">
@@ -18,7 +18,7 @@
           @dragenter.prevent.stop="is_dragover = true"
           @dragleave.prevent.stop="is_dragover = false"
           @drop.prevent.stop="upload($event)">
-        <h5>Drop your files here</h5>
+        <h5>{{ $t('upload.dropbox')}}</h5>
       </div>
       <input type="file" multiple @change="upload($event)" />
       <hr class="my-6" />
@@ -64,6 +64,18 @@ export default {
           return;
         }
 
+        if (!navigator.onLine) {
+          this.uploads.push({
+            task: {},
+            current_progress: 100,
+            name: file.name,
+            variant: 'bg-red-400',
+            icon: 'fas fa-times',
+            text_class: 'text-red-400',
+          });
+          return;
+        }
+
         const storageRef = storage.ref(); // music-9ca17.appspot.com
         const songsRef = storageRef.child(`songs/${file.name}`); // music-9ca17.appspot.com/songs/example.mp3
         const task = songsRef.put(file);
@@ -80,11 +92,11 @@ export default {
         task.on('state_changed', (snapshot) => {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           this.uploads[uploadIndex].current_progress = progress;
-        }, (error) => {
+        }, () => {
           this.uploads[uploadIndex].variant = 'bg-red-400';
           this.uploads[uploadIndex].icon = 'fas fa-times';
           this.uploads[uploadIndex].text_class = 'text-red-400';
-          console.log(error);
+          // console.log(error);
         }, async () => {
           const song = {
             uid: auth.currentUser.uid,
@@ -107,7 +119,7 @@ export default {
         });
       });
 
-      console.log(files);
+      // console.log(files);
     },
     cancelUploads() {
       this.uploads.forEach((upload) => {

@@ -1,4 +1,12 @@
 {
+  "about": {
+    "description": "Ceci est une page à propos"
+  },
+  "auth": {
+    "account": " Votre compte",
+    "login": "Login",
+    "register": "S'inscrire"
+  },
   "home": {
     "listen": "Écoutez de la bonne musique!"
   },
@@ -8,5 +16,9 @@
   "register": {
     "TOS": "",
     "accept": ""
+  },
+  "upload": {
+    "dropbox": "Déposez vos fichiers ici",
+    "title": "Titre"
   }
 }

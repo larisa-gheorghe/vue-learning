@@ -1,4 +1,12 @@
 {
+  "about": {
+    "description": "This is an about page"
+  },
+  "auth": {
+    "account": "Your Account",
+    "login": "Login",
+    "register": "Register"
+  },
   "home": {
     "listen": "Listen to Great Music!"
   },
@@ -11,5 +19,9 @@
   },
   "song": {
     "comment_count": "No Comments | 1 Comment | {count} Comments"
+  },
+  "upload": {
+    "dropbox": "Drop your files here",
+    "title": "Upload"
   }
 }
